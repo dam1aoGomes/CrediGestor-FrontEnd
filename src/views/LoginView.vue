@@ -27,9 +27,9 @@ const handleLogin = async () => {
     <h2>Bem-vindo de volta!</h2>
     <form @submit.prevent="handleLogin">
         <p>E-mail</p>
-        <input type="email" name="" id="" v-model="email" required>
+        <input type="email" v-model="email" required>
         <p>Senha</p>
-        <input type="password" name="" id="" v-model="password" required>
+        <input type="password" v-model="password" required>
         <RouterLink to="/">Esqueceu sua senha?</RouterLink>
         <button type="submit" :disabled="authStore.loading">
             {{ authStore.loading ? 'Entrando...' : 'Login' }}
