@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import LoginView from '../views/LoginView.vue'
+import DashboardView from '../views/DashboardView.vue'
+
 const routes = [
   {
     path: '/',
@@ -11,7 +13,12 @@ const routes = [
     path: '/login',
     name: 'login',
     component: LoginView
-  }
+  },
+  {
+    path: '/dashboard',
+    name: 'dashboard',
+    component: DashboardView
+  },
   // Adicione outras rotas aqui
 ]
 

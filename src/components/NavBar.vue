@@ -4,7 +4,10 @@ import { RouterLink } from 'vue-router';
 
 <template>
     <nav>
-        <img src="../assets/logo.png" class="logo">
+        <div class="logo-container">
+            <img src="../assets/receipt-black-icon.png" class="logo">
+            <h2>CrediGestor</h2>
+        </div>
         <div class="links">
             <RouterLink>Dashboard</RouterLink>
             <RouterLink>Promissórias</RouterLink>
@@ -13,8 +16,10 @@ import { RouterLink } from 'vue-router';
             <RouterLink>Relatórios</RouterLink>
             <RouterLink>Usuários</RouterLink>
         </div>
-        <img src="../assets/icone-sino.png">
-        <img src="../assets/icone-user.png">
+        <div class="icons">
+            <img src="../assets/icone-sino.png">
+            <img src="../assets/icone-user.png">
+        </div>
     </nav>
 </template>
 
@@ -27,6 +32,11 @@ nav {
     border-bottom: solid rgb(221, 221, 221) 1px;
 }
 
+nav .logo-container {
+    display: flex;
+    align-items: center;
+}
+
 nav .links a {
     text-decoration: none;
     font-family: 'Inter', sans-serif;
@@ -37,6 +47,11 @@ nav .links a {
 
 nav .links a:hover {
     border-bottom: solid black 1px;
+}
+
+nav .icons img {
+    margin-left: 20px;
+    cursor: pointer;
 }
 
 </style>
