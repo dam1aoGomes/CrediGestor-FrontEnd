@@ -17,7 +17,7 @@ const toggleMenu = () => {
                 <span></span>
                 <span></span>
             </button>
-            <img src="../assets/receipt-black-icon.png" class="logo">
+            <img src="/receipt-black-icon.png" class="logo">
             <h2>CrediGestor</h2>
         </div>
         <div class="links" :class="{ open: isOpen }">
