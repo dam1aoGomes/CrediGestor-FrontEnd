@@ -51,11 +51,14 @@ h3 {
   border-radius: 8px;
   overflow: hidden;
   background-color: white;
+  width: 100%;
+  overflow-x: auto;
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
+  min-width: 600px;
 }
 
 th {

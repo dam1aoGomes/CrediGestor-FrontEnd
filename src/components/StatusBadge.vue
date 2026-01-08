@@ -6,7 +6,9 @@ const props = defineProps({
 });
 
 const badgeClass = computed(() => {
-  return props.status === 'Pago' ? 'badge-paid' : 'badge-pending';
+  if (props.status === 'Pago') return 'badge-paid';
+  if (props.status === 'Pendente') return 'badge-pending';
+  if (props.status === 'Atrasado') return 'badge-late';
 });
 </script>
 
@@ -31,5 +33,9 @@ const badgeClass = computed(() => {
 
 .badge-pending {
   background-color: #FEF3C7;
+}
+
+.badge-late {
+  background-color: #FECACA;
 }
 </style>

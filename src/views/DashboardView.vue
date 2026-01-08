@@ -33,22 +33,29 @@ const formatMoney = (value) => {
 </template>
 
 <style scoped>
-  .dashboard-container {
-    padding: 50px;
-    margin-left: 100px;
-    margin-right: 100px;
-  }
+.dashboard-container {
+  padding: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
 
-  h1 {
-      font-size: 32px;
-      font-weight: bold;
-  }
+h1 {
+    font-size: 2rem;
+    font-weight: bold;
+}
 
-  .stats-cards {
-      display: flex;
-      flex-direction: row;
-      gap: 20px;
-      margin-top: 20px;
-      justify-content: center;
-  }
+.stats-cards {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    margin-top: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+    .dashboard-container {
+        padding: 15px;
+    }
+}
 </style>
