@@ -4,3 +4,151 @@ body {
   background-color: #F7FAFC;
   margin: 0;
 }
+
+.notes-page {
+  min-height: calc(100dvh - 10dvh);
+  background: #f6f8fb;
+  padding: 56px 24px 80px;
+  font-family: 'Inter', sans-serif;
+}
+
+.notes-page__container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.notes-page__title {
+  margin: 0;
+  font-size: 44px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #0d121c;
+}
+
+.notes-page__description {
+  margin-top: 12px;
+  margin-bottom: 22px;
+  color: #4d6699;
+  font-size: 14px;
+}
+
+.notes-filters {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.notes-filter {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  background: #eef2f6;
+  border: 1px solid transparent;
+  color: #0d121c;
+  font-size: 14px;
+
+  padding: 10px 40px 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+
+  background-image: url("../assets/chevron-down.png");
+  background-repeat: no-repeat;
+  background-position: right 20px center;
+  background-size: 20px 20px;
+}
+
+.notes-card {
+  background: #ffffff;
+  border: 1px solid #dde4ee;
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 0 auto;
+}
+
+.notes-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.notes-table__th {
+  background: #f8fbff;
+  text-align: center;
+  padding: 14px 18px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #0d121c;
+  border-bottom: 1px solid #e7eef8;
+}
+
+.notes-table__cell {
+  padding: 18px;
+  font-size: 14px;
+  border-bottom: 1px solid #edf2f7;
+  color: #0d121c;
+  text-align: center;
+}
+
+.notes-table__row--last .notes-table__cell {
+  border-bottom: none;
+}
+
+.notes-table__cell--muted {
+  color: #0d121c;
+  font-weight: 500;
+}
+
+.notes-table__cell--link {
+  color: #4d6699;
+}
+
+.notes-badge {
+  display: inline-block;
+  min-width: 96px;
+  text-align: center;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  background: #e9edf3;
+  color: #0d121c;
+}
+
+.notes-badge--pendente {
+  background-color: #fef3c7;
+}
+
+.notes-badge--pago {
+  background-color: #c9f4c9;
+}
+
+.notes-badge--atrasado {
+  background-color: #fecaca;
+}
+
+.notes-empty {
+  padding: 18px;
+  margin: 0;
+  color: #4d6699;
+}
+
+.notes-pagination {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  margin-top: 22px;
+}
+
+.notes-pagination__btn {
+  border: none;
+  background: transparent;
+  font-size: 34px;
+  line-height: 1;
+  cursor: pointer;
+  color: #0d121c;
+}
+
+.notes-pagination__btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
