@@ -3,6 +3,7 @@ import HomeView from '../views/HomeView.vue'
 import LoginView from '../views/LoginView.vue'
 import PromissoriasView from '../views/PromissoriasView.vue'
 import DashboardView from '../views/DashboardView.vue'
+import RelatoriosView from '../views/RelatorioView.vue'
 
 const routes = [
   {
@@ -24,6 +25,11 @@ const routes = [
     path: '/promissorias',
     name: 'promissorias',
     component: PromissoriasView
+  },
+  {
+    path: '/relatorios',
+    name: 'relatorios',
+    component: RelatoriosView
   }
   // Adicione outras rotas aqui
 ]
