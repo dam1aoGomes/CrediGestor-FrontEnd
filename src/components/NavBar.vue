@@ -21,12 +21,12 @@ const toggleMenu = () => {
             <h2>CrediGestor</h2>
         </div>
         <div class="links" :class="{ open: isOpen }">
-            <RouterLink>Dashboard</RouterLink>
-            <RouterLink>Promissórias</RouterLink>
-            <RouterLink>Clientes</RouterLink>
-            <RouterLink>Vendas</RouterLink>
-            <RouterLink>Relatórios</RouterLink>
-            <RouterLink>Usuários</RouterLink>
+            <RouterLink to="/dashboard">Dashboard</RouterLink>
+            <RouterLink to="/promissorias">Promissórias</RouterLink>
+            <RouterLink to="/clientes">Clientes</RouterLink>
+            <RouterLink to="/vendas">Vendas</RouterLink>
+            <RouterLink to="/relatorios">Relatórios</RouterLink>
+            <RouterLink to="/usuarios">Usuários</RouterLink>
         </div>
         <div class="icons">
             <img src="../assets/icone-sino.png">
