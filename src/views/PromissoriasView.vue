@@ -70,10 +70,10 @@ function formatBRL(n) {
 }
 
 function badgeClass(status) {
-  const s = status.toLowerCase()
-  if (s === 'pago') return 'notes-badge notes-badge--pago'
-  if (s === 'atrasado') return 'notes-badge notes-badge--atrasado'
-  return 'notes-badge notes-badge--pendente'
+  const s = String(status || '').toLowerCase()
+  if (s === 'pago') return 'cg-chip cg-chip--success'
+  if (s === 'atrasado') return 'cg-chip cg-chip--danger'
+  return 'cg-chip cg-chip--warning'
 }
 </script>
 
@@ -107,39 +107,32 @@ function badgeClass(status) {
         </select>
       </div>
 
-      <section class="notes-card">
-        <table class="notes-table" v-if="notasPaginadas.length">
-          <thead class="notes-table__head">
-            <tr class="notes-table__row notes-table__row--head">
-              <th class="notes-table__th">Note ID</th>
-              <th class="notes-table__th">Cliente</th>
-              <th class="notes-table__th">Valor</th>
-              <th class="notes-table__th">Vencimento</th>
-              <th class="notes-table__th">Status</th>
+      <section class="cg-table-wrapper">
+        <table class="cg-table" v-if="notasPaginadas.length">
+          <thead>
+            <tr>
+              <th class="cg-cell--left">Note ID</th>
+              <th class="cg-cell--left">Cliente</th>
+              <th class="cg-cell--left">Valor</th>
+              <th class="cg-cell--left">Vencimento</th>
+              <th class="cg-cell--left">Status</th>
             </tr>
           </thead>
 
-          <tbody class="notes-table__body">
-            <tr
-              v-for="(n, idx) in notasPaginadas"
-              :key="n.id"
-              :class="[
-                'notes-table__row',
-                idx === notasPaginadas.length - 1 ? 'notes-table__row--last' : ''
-              ]"
-            >
-              <td class="notes-table__cell notes-table__cell--muted">#{{ n.id }}</td>
-              <td class="notes-table__cell notes-table__cell--link">{{ n.cliente }}</td>
-              <td class="notes-table__cell notes-table__cell--link">{{ formatBRL(n.valor) }}</td>
-              <td class="notes-table__cell notes-table__cell--link">{{ n.vencimento }}</td>
-              <td class="notes-table__cell">
+          <tbody>
+            <tr v-for="n in notasPaginadas" :key="n.id">
+              <td class="cg-cell--left cg-text--muted">#{{ n.id }}</td>
+              <td class="cg-cell--left cg-text--highlight">{{ n.cliente }}</td>
+              <td class="cg-cell--left cg-text--highlight">{{ formatBRL(n.valor) }}</td>
+              <td class="cg-cell--left cg-text--highlight">{{ n.vencimento }}</td>
+              <td class="cg-cell--left">
                 <span :class="badgeClass(n.status)">{{ n.status }}</span>
               </td>
             </tr>
           </tbody>
         </table>
 
-        <p v-else class="notes-empty">Nenhuma promissória encontrada.</p>
+        <p v-else class="cg-empty">Nenhuma promissória encontrada.</p>
       </section>
 
       <div class="notes-pagination">
