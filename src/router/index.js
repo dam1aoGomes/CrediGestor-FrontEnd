@@ -5,6 +5,9 @@ import PromissoriasView from '../views/PromissoriasView.vue'
 import DashboardView from '../views/DashboardView.vue'
 import VendasView from '../views/VendasView.vue'
 import RelatoriosView from '../views/RelatorioView.vue'
+import UsersView from '../views/UsersView.vue'
+import UserCreateView from '../views/UsersCreateView.vue'
+import UserEditView from '../views/UsersEditView.vue'
 
 const routes = [
   {
@@ -36,6 +39,21 @@ const routes = [
     path: '/relatorios',
     name: 'relatorios',
     component: RelatoriosView
+  },
+  {
+    path: '/usuarios',
+    name: 'usuarios',
+    component: UsersView
+  },
+  {
+    path: '/usuarios/novo',
+    name: 'usuario-novo',
+    component: UserCreateView
+  },
+  {
+    path: '/usuarios/:id/editar',
+    name: 'usuario-editar',
+    component: UserEditView
   }
   // Adicione outras rotas aqui
 ]
