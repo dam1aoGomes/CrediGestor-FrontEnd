@@ -6,9 +6,9 @@ const props = defineProps({
 });
 
 const badgeClass = computed(() => {
-  if (props.status === 'Pago') return 'badge-paid';
+  if (props.status === 'Pago' || props.status === 'Ativo') return 'badge-paid';
   if (props.status === 'Pendente') return 'badge-pending';
-  if (props.status === 'Atrasado') return 'badge-late';
+  if (props.status === 'Atrasado' || props.status === 'Inativo') return 'badge-late';
 });
 </script>
 

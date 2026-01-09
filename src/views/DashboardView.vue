@@ -1,7 +1,7 @@
 <script setup>
 import Navbar from '../components/Navbar.vue';
-import StatCard from '../components/StatCard.vue';
-import RecentActivitiesTable from '../components/RecentActivitiesTable.vue';
+import StatCard from '../components/dashboard/StatCard.vue';
+import RecentActivitiesTable from '../components/dashboard/RecentActivitiesTable.vue';
 import { onMounted } from 'vue';
 import { useDashboardStore } from '../stores/dashboardStore';
 
@@ -39,7 +39,7 @@ const formatMoney = (value) => {
   margin: 0 auto;
 }
 
-h1 {
+h1 { 
     font-size: 2rem;
     font-weight: bold;
 }

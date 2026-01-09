@@ -1,4 +1,4 @@
-export const mockDashboardData = {
+export const dashboardData = {
   stats: {
     total_receber: 125450.00,
     promissorias_atrasadas: 12,
