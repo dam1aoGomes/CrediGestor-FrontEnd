@@ -97,37 +97,30 @@ function imprimir() {
 
       <h2 class="report-sectionTitle">Relatório Gerado</h2>
 
-      <section class="report-card">
-        <table class="report-table" v-if="temRelatorio">
-          <thead class="report-table__head">
-            <tr class="report-table__row report-table__row--head">
-              <th class="report-table__th">Cliente</th>
-              <th class="report-table__th">Email</th>
-              <th class="report-table__th">Total a pagar</th>
-              <th class="report-table__th">Parcelas atrasadas</th>
-              <th class="report-table__th">Valor atualizado<br />(com taxas)</th>
+      <section class="cg-table-wrapper">
+        <table class="cg-table" v-if="temRelatorio">
+          <thead>
+            <tr>
+              <th>Cliente</th>
+              <th>Email</th>
+              <th>Total a pagar</th>
+              <th>Parcelas atrasadas</th>
+              <th>Valor atualizado<br />(com taxas)</th>
             </tr>
           </thead>
 
-          <tbody class="report-table__body">
-            <tr
-              v-for="(r, idx) in linhas"
-              :key="r.email"
-              :class="[
-                'report-table__row',
-                idx === linhas.length - 1 ? 'report-table__row--last' : ''
-              ]"
-            >
-              <td class="report-table__cell">{{ r.cliente }}</td>
-              <td class="report-table__cell report-table__cell--link">{{ r.email }}</td>
-              <td class="report-table__cell report-table__cell--link">{{ formatBRL(r.total) }}</td>
-              <td class="report-table__cell report-table__cell--link">{{ r.parcelasAtrasadas }}</td>
-              <td class="report-table__cell report-table__cell--link">{{ formatBRL(r.atualizado) }}</td>
+          <tbody>
+            <tr v-for="r in linhas" :key="r.email">
+              <td class="cg-cell--left">{{ r.cliente }}</td>
+              <td class="cg-cell--left cg-text--muted">{{ r.email }}</td>
+              <td class="cg-cell--left cg-text--strong">{{ formatBRL(r.total) }}</td>
+              <td class="cg-cell--center">{{ r.parcelasAtrasadas }}</td>
+              <td class="cg-cell--left cg-text--strong">{{ formatBRL(r.atualizado) }}</td>
             </tr>
           </tbody>
         </table>
 
-        <p v-else class="report-empty">Gere um relatório para visualizar os dados.</p>
+        <p v-else class="cg-empty">Gere um relatório para visualizar os dados.</p>
       </section>
 
       <div class="report-actions" v-if="temRelatorio">

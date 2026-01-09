@@ -164,7 +164,7 @@ body {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
-  max-width: 760px;
+  max-width: 1200px;
   margin: 14px auto 0;
 }
 
