@@ -8,6 +8,8 @@ import RelatoriosView from '../views/RelatorioView.vue'
 import UsersView from '../views/UsersView.vue'
 import UserCreateView from '../views/UsersCreateView.vue'
 import UserEditView from '../views/UsersEditView.vue'
+import NovaVendaView from '../views/NovaVendaView.vue'
+import EditSaleView from '../views/EditarVendaView.vue'
 
 const routes = [
   {
@@ -54,8 +56,17 @@ const routes = [
     path: '/usuarios/:id/editar',
     name: 'usuario-editar',
     component: UserEditView
+  },
+  {
+    path: '/vendas/nova',
+    name: 'nova-venda',
+    component: NovaVendaView
+  },
+  {
+    path: '/vendas/:id/editar',
+    name: 'editar-venda',
+    component: EditSaleView
   }
-  // Adicione outras rotas aqui
 ]
 
 const router = createRouter({

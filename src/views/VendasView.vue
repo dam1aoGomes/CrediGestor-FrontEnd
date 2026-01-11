@@ -7,8 +7,10 @@ import ActionButton from '../components/vendas/Button.vue'
 import PaginationControls from '../components/vendas/PaginationControls.vue'
 import SalesTable from '../components/vendas/SalesTable.vue'
 import { useVendasStore } from '../stores/vendasStore';
+import { useRouter } from 'vue-router'
 
 const store = useVendasStore();
+const router = useRouter();
 
 onMounted(() => {
   store.fetchData();
@@ -22,6 +24,21 @@ const statusFilter = ref('')
 
 const page = ref(1)
 const perPage = 10
+
+function goToNewSale() {
+  router.push('/vendas/nova')
+}
+
+function goToEditSale(sale) {
+  router.push(`/vendas/${sale.id}/editar`)
+}
+
+async function handleDeleteSale(id) {
+  if(confirm('Tem certeza que deseja excluir esta venda?')) {
+    await store.deleteSale(id);
+    store.fetchData();
+  }
+}
 
 const filteredSales = computed(() => {
   let list = salesData.value
@@ -92,11 +109,15 @@ function nextPage() {
       </div>
 
       <div class="new-sale-button">
-        <ActionButton text="Nova Venda" />
+        <ActionButton text="Nova Venda" @click="goToNewSale"/>
       </div>
     </aside>
     <section class="content-table">
-      <SalesTable :sales="paginatedSales" />
+      <SalesTable 
+        :sales="paginatedSales" 
+        @edit="goToEditSale" 
+        @delete="handleDeleteSale" 
+      />
       <PaginationControls 
         :page="page" 
         :total="totalPages" 
