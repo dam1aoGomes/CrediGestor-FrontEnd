@@ -167,7 +167,6 @@ function onSubmit() {
 
 <style scoped>
 .sale-page {
-  padding: 30px;
   max-width: 1100px;
   margin: 0 auto;
 }
@@ -179,7 +178,7 @@ function onSubmit() {
 
 h1 {
   font-size: 2rem;
-  margin: 20px 0 24px;
+  margin: 0 0 24px;
   color: #111827;
 }
 
@@ -202,6 +201,7 @@ label {
   display: flex;
   align-items: center;
   padding: 0 14px;
+  width: 100%;
 }
 
 select {
