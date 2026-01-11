@@ -1,51 +1,23 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import NavBar from '../components/NavBar.vue'
+import { computed, onMounted } from "vue";
+import NavBar from "../components/NavBar.vue";
+import { useUsersStore } from "../stores/usersStore";
 
+const store = useUsersStore();
 
-const STORAGE_KEY = 'cg_users'
-
-function seedUsers() {
-  return [
-    { id: 1, nome: 'Sophia Clark', email: 'sophia.clark@example.com', papel: 'Administrador', status: 'Ativo' },
-    { id: 2, nome: 'Ethan Bennett', email: 'ethan.bennett@example.com', papel: 'Vendedor', status: 'Ativo' },
-    { id: 3, nome: 'Olivia Carter', email: 'olivia.carter@example.com', papel: 'Vendedor', status: 'Ativo' },
-    { id: 4, nome: 'Liam Harper', email: 'liam.harper@example.com', papel: 'Vendedor', status: 'Inativo' },
-    { id: 5, nome: 'Ava Foster', email: 'ava.foster@example.com', papel: 'Vendedor', status: 'Ativo' },
-  ]
-}
-
-function loadUsers() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) {
-      const initial = seedUsers()
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(initial))
-      return initial
-    }
-    const parsed = JSON.parse(raw)
-    return Array.isArray(parsed) ? parsed : seedUsers()
-  } catch {
-    return seedUsers()
-  }
-}
-
-const users = ref([])
+const users = computed(() => store.users);
+const loading = computed(() => store.loading);
+const error = computed(() => store.error);
 
 onMounted(() => {
-  users.value = loadUsers()
-})
+  store.fetchUsers();
+});
 
 function pillClass(type, value) {
-  if (type === 'status') {
-    return value === 'Ativo'
-      ? 'cg-chip'
-      : 'cg-chip cg-chip--inactive'
+  if (type === "status") {
+    return value === "Ativo" ? "cg-chip" : "cg-chip cg-chip--inactive";
   }
-
-  return value === 'Administrador'
-    ? 'cg-chip'
-    : 'cg-chip'
+  return "cg-chip";
 }
 </script>
 
@@ -62,7 +34,10 @@ function pillClass(type, value) {
         </RouterLink>
       </header>
 
-      <section class="cg-table-wrapper">
+      <p v-if="loading" class="cg-empty">Carregando usuários...</p>
+      <p v-else-if="error" class="cg-empty">{{ error }}</p>
+
+      <section v-else class="cg-table-wrapper">
         <table class="cg-table" v-if="users.length">
           <thead>
             <tr>
@@ -104,4 +79,3 @@ function pillClass(type, value) {
     </section>
   </main>
 </template>
-
