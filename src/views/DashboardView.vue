@@ -12,9 +12,15 @@ onMounted(() => {
 });
 
 const formatMoney = (value) => {
-  if (value === undefined || value === null) return 'R$ 0,00';
-  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+  const number = Number(value);
+  if (isNaN(number)) return 'R$ 0,00';
+  
+  return new Intl.NumberFormat('pt-BR', { 
+    style: 'currency', 
+    currency: 'BRL' 
+  }).format(number);
 }
+
 </script>
 
 <template>
