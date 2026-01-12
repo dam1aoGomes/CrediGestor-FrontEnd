@@ -62,7 +62,16 @@ function pillClass(type, value) {
               </td>
 
               <td class="cg-cell--left">
-                <span :class="pillClass('status', u.status)">{{ u.status }}</span>
+                <button
+                  class="cg-toggle"
+                  :class="u.status === 'Ativo' ? 'cg-toggle--on' : 'cg-toggle--off'"
+                  type="button"
+                  :disabled="loading"
+                  @click="store.toggleStatus(u.id)"
+                  :title="u.status === 'Ativo' ? 'Clique para inativar' : 'Clique para ativar'"
+                >
+                  {{ u.status }}
+                </button>
               </td>
 
               <td class="cg-cell--left">

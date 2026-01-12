@@ -411,3 +411,31 @@ body {
     align-items: flex-start;
   }
 }
+
+.cg-toggle {
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 999px;
+  transition: opacity 0.2s, transform 0.05s;
+}
+
+.cg-toggle:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.cg-toggle:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.cg-toggle--on {
+  background: #E8F2FF;
+  color: #125CED;
+}
+
+.cg-toggle--off {
+  background: #F3F4F6;
+  color: #6B7280;
+}
