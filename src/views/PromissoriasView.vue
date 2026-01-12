@@ -1,15 +1,17 @@
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import NavBar from '../components/NavBar.vue'
+import { usePromissoryNotesStore } from '../stores/promissoryNotesStore'
 
-const notas = ref([
-  { id: 12345, cliente: 'Sarah Johnson', valor: 500, vencimento: '2024-08-15', status: 'Pendente' },
-  { id: 67890, cliente: 'Michael Brown', valor: 1200, vencimento: '2024-07-20', status: 'Pago' },
-  { id: 11223, cliente: 'Emily Davis', valor: 800, vencimento: '2024-06-30', status: 'Atrasado' },
-  { id: 44556, cliente: 'David Wilson', valor: 300, vencimento: '2024-09-05', status: 'Pendente' },
-  { id: 44557, cliente: 'Ethan Carter', valor: 400, vencimento: '2024-09-05', status: 'Pendente' },
-  { id: 77889, cliente: 'Jessica Lee', valor: 1500, vencimento: '2024-08-25', status: 'Pendente' },
-])
+const store = usePromissoryNotesStore()
+
+onMounted(() => {
+  store.fetchNotes()
+})
+
+const notas = computed(() => store.notes)
+const loading = computed(() => store.loading)
+const error = computed(() => store.error)
 
 const statusFiltro = ref('')
 const clienteFiltro = ref('')
@@ -87,75 +89,80 @@ function badgeClass(status) {
         Gerencie todas as notas promissórias, incluindo filtro por status, cliente e data de vencimento.
       </p>
 
-      <div class="notes-filters">
-        <select v-model="statusFiltro" class="notes-filter">
-          <option value="">Status</option>
-          <option value="Pendente">Pendente</option>
-          <option value="Pago">Pago</option>
-          <option value="Atrasado">Atrasado</option>
-        </select>
+      <p v-if="loading" class="cg-empty">Carregando promissórias...</p>
+      <p v-else-if="error" class="cg-empty">{{ error }}</p>
 
-        <select v-model="clienteFiltro" class="notes-filter">
-          <option value="">Cliente</option>
-          <option v-for="c in clientes" :key="c" :value="c">{{ c }}</option>
-        </select>
+      <template v-else>
+        <div class="notes-filters">
+          <select v-model="statusFiltro" class="notes-filter">
+            <option value="">Status</option>
+            <option value="Pendente">Pendente</option>
+            <option value="Pago">Pago</option>
+            <option value="Atrasado">Atrasado</option>
+          </select>
 
-        <select v-model="vencimentoOrdem" class="notes-filter">
-          <option value="">Data de Vencimento</option>
-          <option value="asc">Mais antigo primeiro</option>
-          <option value="desc">Mais recente primeiro</option>
-        </select>
-      </div>
+          <select v-model="clienteFiltro" class="notes-filter">
+            <option value="">Cliente</option>
+            <option v-for="c in clientes" :key="c" :value="c">{{ c }}</option>
+          </select>
 
-      <section class="cg-table-wrapper">
-        <table class="cg-table" v-if="notasPaginadas.length">
-          <thead>
-            <tr>
-              <th class="cg-cell--left">Note ID</th>
-              <th class="cg-cell--left">Cliente</th>
-              <th class="cg-cell--left">Valor</th>
-              <th class="cg-cell--left">Vencimento</th>
-              <th class="cg-cell--left">Status</th>
-            </tr>
-          </thead>
+          <select v-model="vencimentoOrdem" class="notes-filter">
+            <option value="">Data de Vencimento</option>
+            <option value="asc">Mais antigo primeiro</option>
+            <option value="desc">Mais recente primeiro</option>
+          </select>
+        </div>
 
-          <tbody>
-            <tr v-for="n in notasPaginadas" :key="n.id">
-              <td class="cg-cell--left cg-text--muted">#{{ n.id }}</td>
-              <td class="cg-cell--left cg-text--highlight">{{ n.cliente }}</td>
-              <td class="cg-cell--left cg-text--highlight">{{ formatBRL(n.valor) }}</td>
-              <td class="cg-cell--left cg-text--highlight">{{ n.vencimento }}</td>
-              <td class="cg-cell--left">
-                <span :class="badgeClass(n.status)">{{ n.status }}</span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <section class="cg-table-wrapper">
+          <table class="cg-table" v-if="notasPaginadas.length">
+            <thead>
+              <tr>
+                <th class="cg-cell--left">Note ID</th>
+                <th class="cg-cell--left">Cliente</th>
+                <th class="cg-cell--left">Valor</th>
+                <th class="cg-cell--left">Vencimento</th>
+                <th class="cg-cell--left">Status</th>
+              </tr>
+            </thead>
 
-        <p v-else class="cg-empty">Nenhuma promissória encontrada.</p>
-      </section>
+            <tbody>
+              <tr v-for="n in notasPaginadas" :key="n.id">
+                <td class="cg-cell--left cg-text--muted">#{{ n.id }}</td>
+                <td class="cg-cell--left cg-text--highlight">{{ n.cliente }}</td>
+                <td class="cg-cell--left cg-text--highlight">{{ formatBRL(n.valor) }}</td>
+                <td class="cg-cell--left cg-text--highlight">{{ n.vencimento }}</td>
+                <td class="cg-cell--left">
+                  <span :class="badgeClass(n.status)">{{ n.status }}</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
 
-      <div class="notes-pagination">
-        <button
-          class="notes-pagination__btn"
-          type="button"
-          @click="prevPage"
-          :disabled="page === 1"
-          aria-label="Anterior"
-        >
-          ‹
-        </button>
+          <p v-else class="cg-empty">Nenhuma promissória encontrada.</p>
+        </section>
 
-        <button
-          class="notes-pagination__btn"
-          type="button"
-          @click="nextPage"
-          :disabled="page === totalPages"
-          aria-label="Próximo"
-        >
-          ›
-        </button>
-      </div>
+        <div class="notes-pagination">
+          <button
+            class="notes-pagination__btn"
+            type="button"
+            @click="prevPage"
+            :disabled="page === 1"
+            aria-label="Anterior"
+          >
+            ‹
+          </button>
+
+          <button
+            class="notes-pagination__btn"
+            type="button"
+            @click="nextPage"
+            :disabled="page === totalPages"
+            aria-label="Próximo"
+          >
+            ›
+          </button>
+        </div>
+      </template>
     </section>
   </main>
 </template>
