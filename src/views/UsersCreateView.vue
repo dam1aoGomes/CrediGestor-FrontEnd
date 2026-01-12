@@ -2,27 +2,15 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import NavBar from '../components/NavBar.vue'
-
-const STORAGE_KEY = 'cg_users'
-
-function loadUsers() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    return raw ? JSON.parse(raw) : []
-  } catch {
-    return []
-  }
-}
-
-function saveUsers(users) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(users))
-}
+import { useUsersStore } from '../stores/usersStore'
 
 const router = useRouter()
+const store = useUsersStore()
 
 const form = ref({
   nome: '',
   email: '',
+  senha: '',
   papel: 'Vendedor',
   status: 'Ativo',
 })
@@ -34,6 +22,8 @@ function validate() {
   if (!form.value.nome?.trim()) return (errorMsg.value = 'Informe o nome.')
   if (!form.value.email?.trim()) return (errorMsg.value = 'Informe o email.')
   if (!form.value.email.includes('@')) return (errorMsg.value = 'Email inválido.')
+  if (!form.value.senha?.trim()) return (errorMsg.value = 'Informe a senha.')
+  if (form.value.senha.trim().length < 6) return (errorMsg.value = 'A senha deve ter no mínimo 6 caracteres.')
   return true
 }
 
@@ -41,19 +31,15 @@ function onCancel() {
   router.push('/usuarios')
 }
 
-function onCreate() {
+async function onCreate() {
   if (!validate()) return
 
-  const users = loadUsers()
-  const newUser = {
-    id: Date.now(),
-    nome: form.value.nome.trim(),
-    email: form.value.email.trim(),
-    papel: form.value.papel,
-    status: form.value.status,
+  const ok = await store.createUser(form.value)
+  if (!ok) {
+    errorMsg.value = store.error || 'Erro ao criar usuário.'
+    return
   }
 
-  saveUsers([newUser, ...users])
   router.push('/usuarios')
 }
 </script>
@@ -81,6 +67,11 @@ function onCreate() {
           </label>
 
           <label class="user-label">
+            Senha
+            <input class="user-input" v-model="form.senha" type="password" placeholder="Defina uma senha" />
+          </label>
+
+          <label class="user-label">
             Papel
             <select class="user-input" v-model="form.papel">
               <option value="Administrador">Administrador</option>
@@ -100,8 +91,13 @@ function onCreate() {
         <p v-if="errorMsg" class="user-error">{{ errorMsg }}</p>
 
         <div class="user-actions">
-          <button class="cg-btn cg-btn--soft" type="button" @click="onCancel">Cancelar</button>
-          <button class="cg-btn cg-btn--primary" type="button" @click="onCreate">Criar usuário</button>
+          <button class="cg-btn cg-btn--soft" type="button" @click="onCancel" :disabled="store.loading">
+            Cancelar
+          </button>
+
+          <button class="cg-btn cg-btn--primary" type="button" @click="onCreate" :disabled="store.loading">
+            {{ store.loading ? 'Criando...' : 'Criar usuário' }}
+          </button>
         </div>
       </section>
     </section>

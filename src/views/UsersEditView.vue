@@ -2,43 +2,48 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import NavBar from '../components/NavBar.vue'
-
-const STORAGE_KEY = 'cg_users'
-
-function loadUsers() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    return raw ? JSON.parse(raw) : []
-  } catch {
-    return []
-  }
-}
-
-function saveUsers(users) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(users))
-}
+import { useUsersStore } from '../stores/usersStore'
 
 const route = useRoute()
 const router = useRouter()
+const store = useUsersStore()
 
 const id = computed(() => Number(route.params.id))
 
-const allUsers = ref([])
 const notFound = ref(false)
 
 const form = ref({
   nome: '',
   email: '',
+  senha: '',          // ✅ novo (opcional)
   papel: 'Vendedor',
   status: 'Ativo',
 })
 
 const errorMsg = ref('')
 
-onMounted(() => {
-  allUsers.value = loadUsers()
-  const current = allUsers.value.find(u => Number(u.id) === id.value)
+function validate() {
+  errorMsg.value = ''
+  if (!form.value.nome?.trim()) return (errorMsg.value = 'Informe o nome.')
+  if (!form.value.email?.trim()) return (errorMsg.value = 'Informe o email.')
+  if (!form.value.email.includes('@')) return (errorMsg.value = 'Email inválido.')
+  // senha opcional: se preencher, valida tamanho
+  if (form.value.senha?.trim() && form.value.senha.trim().length < 6) {
+    return (errorMsg.value = 'A senha deve ter no mínimo 6 caracteres.')
+  }
+  return true
+}
 
+function onCancel() {
+  router.push('/usuarios')
+}
+
+onMounted(async () => {
+  if (!store.users.length) {
+    await store.fetchUsers()
+  }
+
+  const current = store.users.find(u => Number(u.id) === id.value)
   if (!current) {
     notFound.value = true
     return
@@ -47,41 +52,21 @@ onMounted(() => {
   form.value = {
     nome: current.nome,
     email: current.email,
+    senha: '',
     papel: current.papel,
     status: current.status,
   }
 })
 
-function validate() {
-  errorMsg.value = ''
-  if (!form.value.nome?.trim()) return (errorMsg.value = 'Informe o nome.')
-  if (!form.value.email?.trim()) return (errorMsg.value = 'Informe o email.')
-  if (!form.value.email.includes('@')) return (errorMsg.value = 'Email inválido.')
-  return true
-}
-
-function onCancel() {
-  router.push('/usuarios')
-}
-
-function onSave() {
+async function onSave() {
   if (!validate()) return
 
-  const idx = allUsers.value.findIndex(u => Number(u.id) === id.value)
-  if (idx === -1) {
-    notFound.value = true
+  const ok = await store.updateUser(id.value, form.value)
+  if (!ok) {
+    errorMsg.value = store.error || 'Erro ao salvar usuário.'
     return
   }
 
-  allUsers.value[idx] = {
-    ...allUsers.value[idx],
-    nome: form.value.nome.trim(),
-    email: form.value.email.trim(),
-    papel: form.value.papel,
-    status: form.value.status,
-  }
-
-  saveUsers(allUsers.value)
   router.push('/usuarios')
 }
 </script>
@@ -100,12 +85,17 @@ function onSave() {
         <div class="user-formGrid">
           <label class="user-label">
             Nome
-            <input class="user-input" v-model="form.nome" type="text" placeholder="Ex: Sophia Clark" />
+            <input class="user-input" v-model="form.nome" type="text" placeholder="Ex: Maria Silva" />
           </label>
 
           <label class="user-label">
             Email
             <input class="user-input" v-model="form.email" type="email" placeholder="exemplo@dominio.com" />
+          </label>
+
+          <label class="user-label">
+            Nova senha (opcional)
+            <input class="user-input" v-model="form.senha" type="password" placeholder="Deixe em branco para manter" />
           </label>
 
           <label class="user-label">
@@ -128,8 +118,12 @@ function onSave() {
         <p v-if="errorMsg" class="user-error">{{ errorMsg }}</p>
 
         <div class="user-actions">
-          <button class="cg-btn cg-btn--soft" type="button" @click="onCancel">Cancelar</button>
-          <button class="cg-btn cg-btn--primary" type="button" @click="onSave">Salvar</button>
+          <button class="cg-btn cg-btn--soft" type="button" @click="onCancel" :disabled="store.loading">
+            Cancelar
+          </button>
+          <button class="cg-btn cg-btn--primary" type="button" @click="onSave" :disabled="store.loading">
+            {{ store.loading ? 'Salvando...' : 'Salvar' }}
+          </button>
         </div>
       </section>
 
