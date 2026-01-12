@@ -15,13 +15,12 @@ const submitting = ref(false)
 async function handleSubmit(payload) {
   submitting.value = true
   try {
-    if (typeof store.createSale === 'function') {
-      await store.createSale(payload)
-    } else {
-      //store.createSale(payload)
-    }
+    console.log("payload", payload)
 
+    await store.createSale(payload)
     router.push('/vendas')
+  } catch (error) {
+    console.error("Erro ao criar venda:", error)
   } finally {
     submitting.value = false
   }

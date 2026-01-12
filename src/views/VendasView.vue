@@ -8,15 +8,17 @@ import PaginationControls from '../components/vendas/PaginationControls.vue'
 import SalesTable from '../components/vendas/SalesTable.vue'
 import { useVendasStore } from '../stores/vendasStore';
 import { useRouter } from 'vue-router'
+import { storeToRefs } from 'pinia';
 
 const store = useVendasStore();
 const router = useRouter();
 
 onMounted(() => {
   store.fetchData();
+  store.fetchClients();
 });
 
-const salesData = computed(() => store.sales)
+const { sales: salesData, loading } = storeToRefs(store);
 
 const searchQuery = ref('')
 const dateFilter = ref('')
@@ -41,9 +43,9 @@ async function handleDeleteSale(id) {
 }
 
 const filteredSales = computed(() => {
-  let list = salesData.value
+  let list = salesData.value || []
 
-  if (statusFilter.value === 'Ativo' || statusFilter.value === 'Inativo') {
+  if (statusFilter.value && statusFilter.value !== 'Todos') {
     list = list.filter(item => item.status === statusFilter.value)
   }
 

@@ -7,6 +7,12 @@ defineProps({
 })
 
 const emit = defineEmits(['edit', 'delete'])
+
+const formatMoney = (value) => {
+  if (!value) return 'R$ 0,00'
+  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value)
+}
+
 </script>
 
 <template>
@@ -15,9 +21,9 @@ const emit = defineEmits(['edit', 'delete'])
       <thead>
         <tr>
           <th>Cliente</th>
-          <th>CPF</th>
+          <th>Descrição</th>
           <th>Total</th>
-          <!-- <th>Entrada</th> -->
+          <th>Entrada</th>
           <th>Data</th> 
           <th>Status</th>
           <th class="actions-header">Ações</th>
@@ -26,9 +32,9 @@ const emit = defineEmits(['edit', 'delete'])
       <tbody>
         <tr v-for="sale in sales" :key="sale.id">
           <td class="client-cell">{{ sale.client }}</td>
-          <td class="highlight-text">{{ sale.cpf }}</td>
-          <td class="highlight-text">{{ sale.total }}</td>
-          <!-- <td>{{ sale.entry || '-' }}</td> -->
+          <td class="highlight-text">{{ sale.description }}</td>
+          <td class="highlight-text">{{ formatMoney(sale.total) }}</td>
+          <td>{{ formatMoney(sale.entry) }}</td>
           <td class="highlight-text">{{ sale.date }}</td>
           <td><StatusBadge :status="sale.status" /></td>
           <td class="actions-cell">
