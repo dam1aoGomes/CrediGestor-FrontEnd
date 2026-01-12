@@ -19,34 +19,30 @@ const initialValues = computed(() => {
   const s = sale.value || {}
 
   return {
-    clientId: s.client_id ?? s.clientId ?? '',
+    clientId: s.client_id ?? s.customer_id ?? s.clientId ?? '',
     description: s.description ?? '',
     total: s.total ?? '',
     entry: s.entry ?? '',
     installments: s.installments ?? s.parcels ?? 1,
+    saleDate: s.sale_date ?? '',
+    date: s.sale_date ?? '',
+
     firstPaymentDate: s.first_payment_date ?? ''
   }
 })
 
 onMounted(async () => {
-  if (typeof store.fetchSaleById === 'function') {
-    sale.value = await store.fetchSaleById(saleId.value)
-    return
+  if (!store.clients?.length && typeof store.fetchClients === 'function') {
+    await store.fetchClients()
   }
 
-  const found = (store.sales || []).find((x) => String(x.id) === saleId.value)
-  sale.value = found || null
+  sale.value = await store.fetchSaleById(saleId.value)
 })
 
 async function handleSubmit(payload) {
   submitting.value = true
   try {
-    if (typeof store.updateSale === 'function') {
-      await store.updateSale(saleId.value, payload)
-    } else {
-      console.warn('Implemente store.updateSale(id, payload) no vendasStore.')
-    }
-
+    await store.updateSale(saleId.value, payload)
     router.push('/vendas')
   } finally {
     submitting.value = false
