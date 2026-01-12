@@ -439,3 +439,20 @@ body {
   background: #F3F4F6;
   color: #6B7280;
 }
+
+.report-footer {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.report-footer__info {
+  color: #6B7280;
+  font-size: 0.9rem;
+}
+
+:deep(.pagination) {
+  margin-top: 0;
+}
