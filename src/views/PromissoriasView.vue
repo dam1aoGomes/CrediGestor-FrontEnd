@@ -12,6 +12,7 @@ onMounted(() => {
 const notas = computed(() => store.notes)
 const loading = computed(() => store.loading)
 const error = computed(() => store.error)
+const updatingStatus = computed(() => store.updatingStatus || {})
 
 const statusFiltro = ref('')
 const clienteFiltro = ref('')
@@ -73,9 +74,16 @@ function formatBRL(n) {
 
 function badgeClass(status) {
   const s = String(status || '').toLowerCase()
-  if (s === 'pago') return 'cg-chip cg-chip--success'
-  if (s === 'atrasado') return 'cg-chip cg-chip--danger'
+  if (s === 'paid') return 'cg-chip cg-chip--success'
+  if (s === 'overdue') return 'cg-chip cg-chip--danger'
   return 'cg-chip cg-chip--warning'
+}
+
+function statusLabel(status) {
+  const s = String(status || '').toLowerCase()
+  if (s === 'paid') return 'Pago'
+  if (s === 'overdue') return 'Atrasado'
+  return 'Pendente'
 }
 </script>
 
@@ -96,9 +104,9 @@ function badgeClass(status) {
         <div class="notes-filters">
           <select v-model="statusFiltro" class="notes-filter">
             <option value="">Status</option>
-            <option value="Pendente">Pendente</option>
-            <option value="Pago">Pago</option>
-            <option value="Atrasado">Atrasado</option>
+            <option value="pending">Pendente</option>
+            <option value="paid">Pago</option>
+            <option value="overdue">Atrasado</option>
           </select>
 
           <select v-model="clienteFiltro" class="notes-filter">
@@ -132,7 +140,18 @@ function badgeClass(status) {
                 <td class="cg-cell--left cg-text--highlight">{{ formatBRL(n.valor) }}</td>
                 <td class="cg-cell--left cg-text--highlight">{{ n.vencimento }}</td>
                 <td class="cg-cell--left">
-                  <span :class="badgeClass(n.status)">{{ n.status }}</span>
+                  <span
+                    :class="[badgeClass(n.status), 'cg-chip--clickable']"
+                    role="button"
+                    tabindex="0"
+                    :aria-disabled="!!store.updatingStatus?.[n.id]"
+                    @click="!store.updatingStatus?.[n.id] && store.cycleStatus(n.id)"
+                    @keydown.enter.prevent="!store.updatingStatus?.[n.id] && store.cycleStatus(n.id)"
+                    @keydown.space.prevent="!store.updatingStatus?.[n.id] && store.cycleStatus(n.id)"
+                    :title="store.updatingStatus?.[n.id] ? 'Atualizando...' : 'Clique para mudar o status'"
+                  >
+                    {{ statusLabel(n.status) }}
+                  </span>
                 </td>
               </tr>
             </tbody>
@@ -166,3 +185,12 @@ function badgeClass(status) {
     </section>
   </main>
 </template>
+
+<style scoped>
+.cg-chip--clickable { cursor: pointer; }
+.cg-chip--clickable[aria-disabled="true"] {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+</style>

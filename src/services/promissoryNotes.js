@@ -12,3 +12,26 @@ export async function listPromissoryNotes() {
     throw e;
   }
 }
+
+export async function updatePromissoryNoteStatus(promissoryNoteId, status) {
+  const params = { status };
+
+  try {
+    const { data } = await api.put(
+      `/api/promissory-notes/${promissoryNoteId}/status`,
+      {},
+      { params }
+    );
+    return data;
+  } catch (e) {
+    if (e?.response?.status === 404) {
+      const { data } = await api.put(
+        `/promissory-notes/${promissoryNoteId}/status`,
+        null,
+        { params }
+      );
+      return data;
+    }
+    throw e;
+  }
+}
