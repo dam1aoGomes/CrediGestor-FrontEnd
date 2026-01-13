@@ -7,27 +7,21 @@ export const useAuthStore = defineStore('auth', () => {
   const token = ref(localStorage.getItem('token') || null)
   const loading = ref(false)
   const error = ref(null)
+  const api_link = import.meta.env.VITE_API_LINK
 
-  
   const isAuthenticated = computed(() => !!token.value)
 
-  
   async function login(email, password) {
     loading.value = true
     error.value = null
     try {
-      /**
-       * Quem estiver lendo,
-       * verifique se o link de acesso a API está correto no
-       * seu ambiente local,
-       * abraços dami
-       */
-      const response = await axios.post('http://localhost:8000/api/auth/login', {
+      
+      console.log(api_link)
+      const response = await axios.post(api_link+'/api/auth/login', {
         email: email,
         password: password
       })
 
-      // bug fix
       const { access_token, user_id, user_name, user_role } = response.data
       token.value = access_token
 
@@ -57,5 +51,5 @@ export const useAuthStore = defineStore('auth', () => {
     delete axios.defaults.headers.common['Authorization']
   }
 
-  return { user, token, loading, error, isAuthenticated, login, logout }
+  return { user, token, loading, error, isAuthenticated, login, logout}
 })
