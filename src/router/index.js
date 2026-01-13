@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
 import LoginView from '../views/LoginView.vue'
 import PromissoriasView from '../views/PromissoriasView.vue'
 import DashboardView from '../views/DashboardView.vue'
@@ -11,11 +10,12 @@ import UserEditView from '../views/UsersEditView.vue'
 import NovaVendaView from '../views/NovaVendaView.vue'
 import EditSaleView from '../views/EditarVendaView.vue'
 
+import { useAuthStore } from '../stores/auth.js'
+
 const routes = [
   {
     path: '/',
-    name: 'home',
-    component: HomeView
+    redirect: '/dashboard' // Redireciona a raiz para /dashboard
   },
   {
     path: '/login',
@@ -25,53 +25,84 @@ const routes = [
   {
     path: '/dashboard',
     name: 'dashboard',
-    component: DashboardView
+    component: DashboardView,
+    meta: { requiresAuth: true }
   },
   {
     path: '/promissorias',
     name: 'promissorias',
-    component: PromissoriasView
+    component: PromissoriasView,
+    meta: { requiresAuth: true }
   },
   {
     path: '/vendas',
     name: 'vendas',
-    component: VendasView
+    component: VendasView,
+    meta: { requiresAuth: true }
   },
   {
     path: '/relatorios',
     name: 'relatorios',
-    component: RelatoriosView
+    component: RelatoriosView,
+    meta: { requiresAuth: true }
   },
   {
     path: '/usuarios',
     name: 'usuarios',
-    component: UsersView
+    component: UsersView,
+    meta: { requiresAuth: true }
   },
   {
     path: '/usuarios/novo',
     name: 'usuario-novo',
-    component: UserCreateView
+    component: UserCreateView,
+    meta: { requiresAuth: true }
   },
   {
     path: '/usuarios/:id/editar',
     name: 'usuario-editar',
-    component: UserEditView
+    component: UserEditView,
+    meta: { requiresAuth: true }
   },
   {
     path: '/vendas/nova',
     name: 'nova-venda',
-    component: NovaVendaView
+    component: NovaVendaView,
+    meta: { requiresAuth: true }
   },
   {
     path: '/vendas/:id/editar',
     name: 'editar-venda',
-    component: EditSaleView
+    component: EditSaleView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    redirect: '/'
   }
 ]
 
 const router = createRouter({
   history: createWebHistory(),
   routes
+})
+
+router.beforeEach((to, from, next) => {
+  const authStore = useAuthStore()
+
+  // Verifica se a rota para onde o usuário vai exige autenticação
+  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+    // Se exigir e não estiver logado, manda para o Login
+    next({ name: 'login' })
+  } 
+  // Opcional: Se o usuário já estiver logado e tentar ir para o Login, manda para a Home
+  else if (to.name === 'login' && authStore.isAuthenticated) {
+    next({ name: 'dashboard' })
+  } 
+  // Caso contrário, permite a navegação
+  else {
+    next()
+  }
 })
 
 export default router
