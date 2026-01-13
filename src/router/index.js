@@ -9,6 +9,9 @@ import UserCreateView from '../views/UsersCreateView.vue'
 import UserEditView from '../views/UsersEditView.vue'
 import NovaVendaView from '../views/NovaVendaView.vue'
 import EditSaleView from '../views/EditarVendaView.vue'
+import ClientView from '../views/ClientView.vue'
+import ClientCreateView from '../views/ClientCreateView.vue'
+import ClientEditView from '../views/ClientEditView.vue'
 
 import { useAuthStore } from '../stores/auth.js'
 
@@ -74,6 +77,24 @@ const routes = [
     path: '/vendas/:id/editar',
     name: 'editar-venda',
     component: EditSaleView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/clientes',
+    name: 'clientes',
+    component: ClientView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/criar-clientes',
+    name: 'criar-clientes',
+    component: ClientCreateView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/editar-clientes/:id',
+    name: 'editar-clientes',
+    component: ClientEditView,
     meta: { requiresAuth: true }
   },
   {
