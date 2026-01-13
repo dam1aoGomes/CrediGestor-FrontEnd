@@ -3,11 +3,8 @@ import { getDelinquencyReport } from "../services/reports";
 
 function parseMoneyString(v) {
   if (v === null || v === undefined) return 0;
-
   let s = String(v).trim();
-
   s = s.replace(/[^0-9.-]/g, "");
-
   const num = Number.parseFloat(s);
   return Number.isFinite(num) ? num : 0;
 }
@@ -15,8 +12,7 @@ function parseMoneyString(v) {
 function calcUpdated(total, overdueCount) {
   const t = Number(total || 0);
   const o = Number(overdueCount || 0);
-  const taxa = 1 + o * 0.01;
-  return t * taxa;
+  return t * (1 + o * 0.01);
 }
 
 export const useDelinquencyReportStore = defineStore("delinquencyReport", {
@@ -57,16 +53,13 @@ export const useDelinquencyReportStore = defineStore("delinquencyReport", {
         });
 
         if (!this.linhas.length) {
-          this.error = "Nenhum cliente inadimplente encontrado para o período."
+          this.error = "Nenhum cliente inadimplente encontrado para o período.";
         }
 
         return true;
       } catch (e) {
         const status = e?.response?.status;
-        const detail =
-          e?.response?.data?.detail ||
-          e?.message ||
-          "Erro ao gerar relatório";
+        const detail = e?.response?.data?.detail || e?.message || "Erro ao gerar relatório";
 
         this.error = status ? `Erro ${status}: ${detail}` : String(detail);
         this.linhas = [];

@@ -1,14 +1,19 @@
 import { api } from "./api";
 
 export async function getDelinquencyReport({ de, ate } = {}) {
-  const { data } = await api.get("/reports/delinquency", {
-    params: {
-      from: de || undefined,
-      to: ate || undefined,
-      start_date: de || undefined,
-      end_date: ate || undefined,
-    },
-  });
+  const params = {
+    due_from: de || undefined,
+    due_to: ate || undefined,
+  };
 
-  return data;
+  try {
+    const { data } = await api.get("/api/reports/delinquency", { params });
+    return data;
+  } catch (e) {
+    if (e?.response?.status === 404) {
+      const { data } = await api.get("/reports/delinquency", { params });
+      return data;
+    }
+    throw e;
+  }
 }

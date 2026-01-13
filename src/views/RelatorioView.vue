@@ -12,76 +12,13 @@ const ate = ref('')
 const loading = computed(() => store.loading)
 const error = computed(() => store.error)
 
-function toDateOnly(d) {
-  return d ? String(d).slice(0, 10) : ''
-}
-
-function inRange(dueDate) {
-  const d = toDateOnly(dueDate)
-  if (!d) return false
-
-  const hasDe = !!de.value
-  const hasAte = !!ate.value
-  if (!hasDe && !hasAte) return true
-
-  if (hasDe && d < de.value) return false
-  if (hasAte && d > ate.value) return false
-  return true
-}
-
-const linhasFiltradas = computed(() => {
-  const base = store.linhas || []
-
-  if (!de.value && !ate.value) return base
-
-  const toDateOnly = (d) => (d ? String(d).slice(0, 10) : "")
-
-  const inRange = (dueDate) => {
-    const d = toDateOnly(dueDate)
-    if (!d) return false
-    if (de.value && d < de.value) return false
-    if (ate.value && d > ate.value) return false
-    return true
-  }
-
-  return base
-    .map((c) => {
-      const installments = Array.isArray(c.installments) ? c.installments : []
-      const filteredInst = installments.filter((i) => inRange(i.due_date))
-
-      if (!filteredInst.length) return null
-
-      const parcelasAtrasadas = filteredInst.filter((i) => Number(i.days_overdue || 0) > 0).length
-
-      const total = filteredInst.reduce((sum, i) => {
-        const bal = Number(String(i.outstanding_balance ?? '').replace(/[^0-9.-]/g, ''))
-        if (Number.isFinite(bal) && bal !== 0) return sum + bal
-
-        const orig = Number(String(i.original_amount ?? '').replace(/[^0-9.-]/g, '')) || 0
-        const paid = Number(String(i.paid_amount ?? '').replace(/[^0-9.-]/g, '')) || 0
-        return sum + Math.max(0, orig - paid)
-      }, 0)
-
-      const atualizado = total * (1 + parcelasAtrasadas * 0.01)
-
-      return {
-        ...c,
-        parcelasAtrasadas,
-        total,
-        atualizado,
-        installments: filteredInst,
-      }
-    })
-    .filter(Boolean)
-})
-
-
-const temRelatorio = computed(() => linhasFiltradas.value.length > 0)
+const linhas = computed(() => store.linhas || [])
+const temRelatorio = computed(() => linhas.value.length > 0)
 
 const page = ref(1)
 const perPage = 8
 
-const totalItems = computed(() => Array.isArray(linhasFiltradas.value) ? linhasFiltradas.value.length : 0)
+const totalItems = computed(() => linhas.value.length)
 
 const totalPages = computed(() => {
   return Math.max(1, Math.ceil(totalItems.value / perPage))
@@ -89,7 +26,7 @@ const totalPages = computed(() => {
 
 const linhasPaginadas = computed(() => {
   const start = (page.value - 1) * perPage
-  return linhasFiltradas.value.slice(start, start + perPage)
+  return linhas.value.slice(start, start + perPage)
 })
 
 watch([de, ate], () => {
@@ -129,7 +66,7 @@ async function gerarRelatorio() {
 
 function exportarCSV() {
   const header = ['Cliente', 'Telefone', 'Total a pagar', 'Parcelas atrasadas', 'Valor atualizado (com taxas)']
-  const rows = linhasFiltradas.value.map(r => ([
+  const rows = linhas.value.map(r => ([
     r.cliente,
     r.telefone,
     formatBRL(r.total),
