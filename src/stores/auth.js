@@ -7,7 +7,7 @@ export const useAuthStore = defineStore('auth', () => {
   const token = ref(localStorage.getItem('token') || null)
   const loading = ref(false)
   const error = ref(null)
-  const api_link = import.meta.env.VITE_API_LINK
+  const api_link = import.meta.env.VITE_API_URL
 
   const isAuthenticated = computed(() => !!token.value)
 
