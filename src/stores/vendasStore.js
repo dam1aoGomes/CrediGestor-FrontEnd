@@ -2,11 +2,38 @@ import { defineStore } from 'pinia'
 import vendasService from '../services/sales.js'
 import clientesService from '../services/customers.js'
 
-function toISODate(value) {
-  if (!value) return ''
-  const d = new Date(value)
-  if (Number.isNaN(d.getTime())) return ''
-  return d.toISOString().slice(0, 10)
+function parseCurrency(value) {
+  if (value === null || value === undefined || value === '') return 0;
+  if (typeof value === 'number') return value;
+  
+  const cleanStr = String(value)
+    .replace(/[R$\s]/g, '')    
+    .replace(/\./g, '')        
+    .replace(',', '.');        
+
+  const number = parseFloat(cleanStr);
+  return isNaN(number) ? 0 : number;
+}
+
+function parseDate(value) {
+  if (!value) return null;
+  if (typeof value === 'string' && value.match(/^\d{4}-\d{2}-\d{2}$/)) {
+    return value;
+  }
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return null;
+  return d.toISOString().slice(0, 10);
+}
+
+function formatDateBr(dateString) {
+  if (!dateString) return 'Data N/D';
+  const datePart = String(dateString).split('T')[0];
+  const parts = datePart.split('-');
+  
+  if (parts.length !== 3) return datePart;
+  
+  const [year, month, day] = parts;
+  return `${day}/${month}/${year}`;
 }
 
 export const useVendasStore = defineStore('sales', {
@@ -44,20 +71,16 @@ export const useVendasStore = defineStore('sales', {
 
           return {
             id: s.id,
-
             customer_id: s.customer_id,
             client_id: s.customer_id,
-            sale_date: toISODate(saleDateRaw),
-            first_installment_date: toISODate(s.first_installment_date),
+            sale_date: saleDateRaw ? String(saleDateRaw).split('T')[0] : '',
+            first_installment_date: parseDate(s.first_installment_date),
             client: foundClient ? foundClient.name : (s.customer?.full_name || `Cliente ${s.customer_id}`),
             description: s.description || '',
             total: parseFloat(s.total_amount) || 0,
             entry: parseFloat(s.down_payment || 0) || 0,
-            date: saleDateRaw
-              ? new Date(saleDateRaw).toLocaleDateString('pt-BR')
-              : 'Data N/D',
+            date: formatDateBr(saleDateRaw),
             status: s.status || 'Ativo',
-
             installments: s.installments_count ?? 1
           }
         })
@@ -70,19 +93,24 @@ export const useVendasStore = defineStore('sales', {
 
     async createSale(formData) {
       try {
+        const totalAmount = parseCurrency(formData.total || formData.totalValue);
+        const downPayment = parseCurrency(formData.entry);
+        const firstPaymentDate = formData.firstPaymentDate || formData.first_payment_date;
+
         const payload = {
           customer_id: formData.clientId || formData.client_id,
           description: formData.description,
-          total_amount: parseFloat(formData.total || formData.totalValue),
-          down_payment: parseFloat(formData.entry || 0),
+          total_amount: totalAmount,
+          down_payment: downPayment,
           installments_count: parseInt(formData.installments),
-          first_installment_date: formData.firstPaymentDate || formData.first_payment_date
+          first_installment_date: firstPaymentDate
         }
 
-        if (!payload.customer_id || !payload.total_amount) {
-            console.error("Payload incompleto gerado:", payload)
-            throw new Error("Dados obrigatórios (Cliente ou Total) estão faltando ou zerados.")
+        if (!payload.customer_id || payload.total_amount <= 0) {
+            console.error("Payload incompleto ou zerado:", payload)
+            throw new Error("Dados obrigatórios inválidos.")
         }
+        
         await vendasService.create(payload)
         await this.fetchData()
       } catch (error) {
@@ -93,22 +121,29 @@ export const useVendasStore = defineStore('sales', {
 
     async updateSale(id, formData) {
       try {
+        const totalAmount = parseCurrency(formData.total);
+        const downPayment = parseCurrency(formData.entry);
+        const firstPaymentDate = parseDate(formData.firstPaymentDate || formData.first_payment_date);
+
         const payload = {
           customer_id: formData.clientId || formData.client_id || formData.customer_id,
           description: formData.description,
-          total_amount: parseFloat(formData.total),
-          down_payment: parseFloat(formData.entry || 0),
+          total_amount: totalAmount,
+          down_payment: downPayment,
           installments_count: parseInt(formData.installments),
-          first_installment_date: formData.firstPaymentDate || formData.first_payment_date
+          first_installment_date: firstPaymentDate
         }
 
         const saleDate = formData.saleDate || formData.date || formData.sale_date
-        if (saleDate) payload.sale_date = saleDate
+        if (saleDate) payload.sale_date = parseDate(saleDate)
 
         await vendasService.update(id, payload)
         await this.fetchData()
       } catch (error) {
         console.error('Erro ao atualizar', error)
+        if (error.response?.data) {
+             console.error('Detalhes do erro API:', error.response.data);
+        }
         throw error
       }
     },
@@ -125,23 +160,19 @@ export const useVendasStore = defineStore('sales', {
     async fetchSaleById(id) {
       try {
         const response = await vendasService.getSaleById(id)
-
         const s = response.data.sale || response.data
-
         const saleDateRaw = s.sale_date || s.created_at || null
 
         return {
           id: s.id,
           client_id: s.customer_id,
           customer_id: s.customer_id,
-
           description: s.description || '',
-          total: s.total_amount ?? '',
+          total: s.total_amount ?? '', 
           entry: s.down_payment ?? '',
           installments: s.installments_count ?? 1,
-
-          sale_date: toISODate(saleDateRaw),
-          first_payment_date: toISODate(s.first_installment_date)
+          sale_date: saleDateRaw ? String(saleDateRaw).split('T')[0] : '',
+          first_payment_date: parseDate(s.first_installment_date)
         }
       } catch (e) {
         console.error('Venda não encontrada', e)

@@ -40,9 +40,15 @@ onMounted(async () => {
 
 async function handleSubmit(payload) {
   submitting.value = true
+  submitting.value = true
   try {
     await store.updateSale(saleId.value, payload)
     router.push('/vendas')
+  } catch (error) {
+    const backendMessage = error.response?.data?.detail 
+      || error.response?.data?.message 
+      || 'Ocorreu um erro ao atualizar a venda.'
+    alert(`Atenção: ${backendMessage}`)
   } finally {
     submitting.value = false
   }
