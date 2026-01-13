@@ -1,6 +1,6 @@
 <script setup>
 import { computed, onMounted } from "vue";
-import NavBar from "../components/NavBar.vue";
+import NavBar from "../components/Navbar.vue";
 import { useUsersStore } from "../stores/usersStore";
 
 const store = useUsersStore();

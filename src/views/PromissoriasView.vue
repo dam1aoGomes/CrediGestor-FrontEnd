@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
-import NavBar from '../components/NavBar.vue'
+import NavBar from '../components/Navbar.vue'
 import { usePromissoryNotesStore } from '../stores/promissoryNotesStore'
 
 const store = usePromissoryNotesStore()

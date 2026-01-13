@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import NavBar from '../components/NavBar.vue'
+import NavBar from '../components/Navbar.vue'
 import { useUsersStore } from '../stores/usersStore'
 
 const route = useRoute()

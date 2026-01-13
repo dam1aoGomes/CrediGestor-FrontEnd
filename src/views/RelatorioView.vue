@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
-import NavBar from '../components/NavBar.vue'
+import NavBar from '../components/Navbar.vue'
 import { useDelinquencyReportStore } from '../stores/reportStore'
 import PaginationControls from '../components/vendas/PaginationControls.vue'
 
