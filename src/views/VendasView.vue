@@ -50,9 +50,9 @@ const filteredSales = computed(() => {
   }
 
   if (dateFilter.value === 'Mais antigo') {
-    list.sort((a, b) => a.date.localeCompare(b.date))
+    list.sort((a, b) => (a.first_installment_date || '').localeCompare(b.first_installment_date || ''))
   } else if (dateFilter.value === 'Mais recente') {
-    list.sort((a, b) => b.date.localeCompare(a.date))
+    list.sort((a, b) => (b.first_installment_date || '').localeCompare(a.first_installment_date || ''))
   }
 
   if (searchQuery.value) {

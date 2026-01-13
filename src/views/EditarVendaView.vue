@@ -26,7 +26,6 @@ const initialValues = computed(() => {
     installments: s.installments ?? s.parcels ?? 1,
     saleDate: s.sale_date ?? '',
     date: s.sale_date ?? '',
-
     firstPaymentDate: s.first_payment_date ?? ''
   }
 })

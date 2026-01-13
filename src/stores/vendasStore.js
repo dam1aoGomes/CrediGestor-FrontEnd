@@ -39,7 +39,7 @@ export const useVendasStore = defineStore('sales', {
         const rawSales = response.data.sales || response.data || []
 
         this.sales = rawSales.map(s => {
-          const saleDateRaw = s.sale_date || s.created_at || null
+          const saleDateRaw = s.first_installment_date || s.created_at || null
 
           return {
             id: s.id,
