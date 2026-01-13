@@ -45,10 +45,6 @@ async function handleDeleteSale(id) {
 const filteredSales = computed(() => {
   let list = salesData.value || []
 
-  if (statusFilter.value && statusFilter.value !== 'Todos') {
-    list = list.filter(item => item.status === statusFilter.value)
-  }
-
   if (dateFilter.value === 'Mais antigo') {
     list.sort((a, b) => (a.first_installment_date || '').localeCompare(b.first_installment_date || ''))
   } else if (dateFilter.value === 'Mais recente') {
@@ -103,11 +99,6 @@ function nextPage() {
           :options="['Mais antigo', 'Mais recente']" 
           v-model="dateFilter"
         />
-        <FilterSelect 
-          label="Status" 
-          :options="['Todos','Ativo', 'Inativo']" 
-          v-model="statusFilter"
-        />
       </div>
 
       <div class="new-sale-button">
@@ -156,11 +147,6 @@ h1 {
 
 .filter-name, .row-filters, .action-area {
   margin-bottom: 16px;
-}
-
-.row-filters {
-  display: flex;
-  gap: 15px;
 }
 
 @media (max-width: 768px) {

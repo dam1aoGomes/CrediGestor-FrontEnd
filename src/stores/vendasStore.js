@@ -21,7 +21,7 @@ export const useVendasStore = defineStore('sales', {
       try {
         const response = await clientesService.getAll()
         const rawClients = response.data.customers || response.data || []
-        console.log('Clientes brutos da API:', rawClients)
+
         this.clients = rawClients.map(c => ({
           id: c.id,
           name: c.full_name || 'Sem Nome'
