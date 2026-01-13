@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import dashboardService from '../services/dashboard'
+import clientesService from '../services/customers.js'
 
 export const useDashboardStore = defineStore('dashboard', {
   state: () => ({
@@ -15,13 +16,14 @@ export const useDashboardStore = defineStore('dashboard', {
   
   actions: {
     async fetchData() {
-      console.log('Buscando dados do dashboard...')
       this.isLoading = true
       try {
-        const response = await dashboardService.getDashboardData()
-        const apiData = response.data
-
-        console.log('Dados brutos da API:', apiData)
+        const [dashboardRes, clientsRes] = await Promise.all([
+          dashboardService.getDashboardData(),
+          clientesService.getAll()
+        ]);
+        const apiData = dashboardRes.data
+        const clientsList = clientsRes.data.customers || clientsRes.data || []
 
         this.stats = {
           total_receber: parseFloat(apiData.total_to_receive), 
@@ -31,14 +33,18 @@ export const useDashboardStore = defineStore('dashboard', {
         }
 
         if (apiData.next_due && Array.isArray(apiData.next_due)) {
-            this.activities = apiData.next_due.map(item => ({
+            this.activities = apiData.next_due.map(item => {
+              const foundClient = clientsList.find(c => c.id === item.customer_id);
+
+              return {
                 id: item.promissory_note_id,
-                client: item.customer_id === 0 ? 'Cliente Desconhecido' : `Cliente ${item.customer_id}`,
+                client: foundClient ? foundClient.full_name : `Cliente ${item.customer_id}`,
                 noteId: item.promissory_note_id,
                 value: parseFloat(item.outstanding_balance),
                 date: item.due_date,
                 status: item.status || 'Pendente'
-            }))
+              }
+            })
         }
       } catch (error) {
         console.error('Erro ao buscar dashboard:', error)

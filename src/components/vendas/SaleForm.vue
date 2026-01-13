@@ -22,11 +22,22 @@ const form = reactive({
   firstPaymentDate: ''
 })
 
+function parseCurrency(value) {
+  if (!value) return 0
+  if (typeof value === 'number') return value
+  
+  const cleanStr = String(value).replace(/\./g, '').replace(',', '.')
+  const num = parseFloat(cleanStr)
+  return isNaN(num) ? 0 : num
+}
+
 function hydrate(values = {}) {
   form.clientId = values.clientId ?? values.client_id ?? ''
   form.description = values.description ?? ''
-  form.total = values.total ?? ''
-  form.entry = values.entry ?? ''
+  
+  form.total = values.total !== undefined ? String(values.total).replace('.', ',') : ''
+  form.entry = values.entry !== undefined ? String(values.entry).replace('.', ',') : ''
+      
   form.installments = values.installments ?? values.parcels ?? 1
   form.firstPaymentDate = values.firstPaymentDate ?? values.first_payment_date ?? ''
   errors.value = {}
@@ -45,11 +56,14 @@ function validate() {
   const e = {}
 
   if (!form.clientId) e.clientId = 'Selecione um cliente.'
-  const total = Number(String(form.total).replace(',', '.'))
+
+  const total = parseCurrency(form.total)
   if (!form.total || Number.isNaN(total) || total <= 0) e.total = 'Informe um valor total válido.'
 
   const entry = form.entry === '' ? 0 : Number(String(form.entry).replace(',', '.'))
   if (Number.isNaN(entry) || entry < 0) e.entry = 'Informe uma entrada válida.'
+
+  if (entry > total) e.entry = 'O valor de entrada não pode ser maior que o valor total.'
 
   const inst = Number(form.installments)
   if (!inst || Number.isNaN(inst) || inst < 1) e.installments = 'Informe o número de parcelas (>= 1).'
@@ -66,8 +80,8 @@ function onSubmit() {
   const payload = {
     client_id: form.clientId,
     description: String(form.description || '').trim(),
-    total: Number(String(form.total).replace(',', '.')),
-    entry: form.entry === '' ? 0 : Number(String(form.entry).replace(',', '.')),
+    total: parseCurrency(form.total),
+    entry: parseCurrency(form.entry),
     installments: Number(form.installments),
     first_payment_date: form.firstPaymentDate
   }
@@ -169,6 +183,7 @@ function onSubmit() {
 .sale-page {
   max-width: 1100px;
   margin: 0 auto;
+  padding: 30px;
 }
 
 .sale-card {
