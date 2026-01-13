@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import { useAuthStore } from '../stores/auth';
 import { useRouter } from 'vue-router';
+import Navbar from '../components/Navbar.vue';
 
 const router = useRouter();
 const email = ref('');
@@ -17,9 +18,7 @@ const handleLogin = async () => {
 </script>
 
 <template>
-<nav>
-    <img src="../assets/logo.png">
-</nav>
+<Navbar/>
 <main>
     <h2>Bem-vindo de volta!</h2>
     <form @submit.prevent="handleLogin">
@@ -37,17 +36,6 @@ const handleLogin = async () => {
 </template>
 
 <style scoped>
-nav {
-    height: 10dvh;
-    display: flex;
-    align-items: center;
-    border-bottom: solid rgb(221, 221, 221) 1px;
-}
-
-nav img {
-    margin-left: 5vw;
-}
-
 main {
     display: flex;
     flex-direction: column;
