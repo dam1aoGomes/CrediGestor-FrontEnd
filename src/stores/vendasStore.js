@@ -21,10 +21,10 @@ export const useVendasStore = defineStore('sales', {
       try {
         const response = await clientesService.getAll()
         const rawClients = response.data.customers || response.data || []
-
+        console.log('Clientes brutos da API:', rawClients)
         this.clients = rawClients.map(c => ({
           id: c.id,
-          name: c.name || c.full_name || c.username || 'Sem Nome'
+          name: c.full_name || 'Sem Nome'
         }))
       } catch (error) {
         console.error('Erro ao buscar clientes:', error)
@@ -40,6 +40,7 @@ export const useVendasStore = defineStore('sales', {
 
         this.sales = rawSales.map(s => {
           const saleDateRaw = s.first_installment_date || s.created_at || null
+          const foundClient = this.clients.find(c => c.id === s.customer_id);
 
           return {
             id: s.id,
@@ -48,8 +49,7 @@ export const useVendasStore = defineStore('sales', {
             client_id: s.customer_id,
             sale_date: toISODate(saleDateRaw),
             first_installment_date: toISODate(s.first_installment_date),
-
-            client: s.customer?.name || `Cliente ${s.customer_id}`,
+            client: foundClient ? foundClient.name : (s.customer?.full_name || `Cliente ${s.customer_id}`),
             description: s.description || '',
             total: parseFloat(s.total_amount) || 0,
             entry: parseFloat(s.down_payment || 0) || 0,

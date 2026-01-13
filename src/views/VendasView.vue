@@ -14,11 +14,11 @@ const store = useVendasStore();
 const router = useRouter();
 
 onMounted(() => {
-  store.fetchData();
   store.fetchClients();
+  store.fetchData();
 });
 
-const { sales: salesData, loading } = storeToRefs(store);
+const { sales: salesData } = storeToRefs(store);
 
 const searchQuery = ref('')
 const dateFilter = ref('')

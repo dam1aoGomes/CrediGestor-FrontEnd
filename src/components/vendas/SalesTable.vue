@@ -25,7 +25,7 @@ const formatMoney = (value) => {
           <th>Total</th>
           <th>Entrada</th>
           <th>Data</th> 
-          <th>Status</th>
+          <!-- <th>Status</th> -->
           <th class="actions-header">Ações</th>
         </tr>
       </thead>
@@ -36,7 +36,7 @@ const formatMoney = (value) => {
           <td class="highlight-text">{{ formatMoney(sale.total) }}</td>
           <td>{{ formatMoney(sale.entry) }}</td>
           <td class="highlight-text">{{ sale.date }}</td>
-          <td><StatusBadge :status="sale.status" /></td>
+          <!-- <td><StatusBadge :status="sale.status" /></td> -->
           <td class="actions-cell">
             <button class="icon-btn edit-btn" @click="$emit('edit', sale)" title="Editar">
               <Edit2 :size="18" />
