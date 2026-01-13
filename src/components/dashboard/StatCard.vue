@@ -1,7 +1,10 @@
 <script setup>
 defineProps({
   title: String,
-  value: String
+  value: {
+    type: [String, Number],
+    default: '0' // Valor inicial caso a store ainda esteja vazia
+  }
 })
 </script>
 
