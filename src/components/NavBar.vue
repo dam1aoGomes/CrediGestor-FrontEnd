@@ -19,7 +19,7 @@ const toggleProfile = () => {
 
 const handleLogout = () => {
   authStore.logout()
-  router.push('/login') // Redireciona para login após sair
+  router.push('/login')
 }
 </script>
 
@@ -69,16 +69,17 @@ const handleLogout = () => {
 </template>
 
 <style scoped>
-/* Mantendo seus estilos originais e adicionando os novos */
 
 .profile-container {
     position: relative;
-    display: inline-block;
+    display: flex;
+    width: 180px;
+    
 }
 
 .user-icon {
     cursor: pointer;
-    width: 30px; /* Ajuste conforme necessário */
+    width: 30px;
     height: auto;
 }
 
@@ -135,7 +136,6 @@ hr {
     background: #cc0000;
 }
 
-/* Seus estilos originais abaixo... */
 nav {
     height: 10dvh;
     display: flex;
@@ -143,139 +143,76 @@ nav {
     justify-content: space-around;
     border-bottom: solid rgb(221, 221, 221) 1px;
 }
+
 nav .logo-container {
-
     display: flex;
-
     align-items: center;
-
 }
-
-
 
 nav .links a {
-
     text-decoration: none;
-
     font-family: 'Inter', sans-serif;
-
     margin-left: 15px;
-
     color: #0D121C;
-
     font-weight: bold;
-
 }
 
-
-
 nav .links a:hover {
-
     border-bottom: solid black 1px;
-
 }
 
 
 
 nav .icons img {
-
-    margin-left: 20px;
-
-    cursor: pointer;
+  margin-left: auto;
+  cursor: pointer;
 
 }
-
-
 
 .hamburger {
-
     display: none;
-
     background: none;
-
     border: none;
-
     cursor: pointer;
-
     margin-right: 10px;
-
 }
-
-
 
 .hamburger span {
-
     display: block;
-
     width: 22px;
-
     height: 2px;
-
     background: #0D121C;
-
     margin: 4px 0;
-
 }
 
-
-
 @media (max-width: 768px) {
-
     .links {
-
         position: absolute;
-
         top: 64px;
-
         left: 0;
-
         width: 100%;
-
         background: white;
-
         flex-direction: column;
-
         padding: 16px;
-
         display: none;
-
         border-bottom: 1px solid #E5E7EB;
-
     }
-
-
 
     .links.open {
-
         display: flex;
-
     }
-
-
 
     .hamburger {
-
         display: block;
-
     }
-
-
 
     h2 {
-
         font-size: 1.2rem;
-
     }
-
-
 
     .logo {
-
         width: 2rem;
-
         height: 2rem;
-
     }
-
 }
 </style>
