@@ -1,5 +1,5 @@
 <script setup>
-import StatusBadge from '../StatusBadge.vue'
+import StatusBadge from '../dashboard/StatusBadge.vue'
 import { Edit2, Trash2 } from 'lucide-vue-next';
 
 defineProps({

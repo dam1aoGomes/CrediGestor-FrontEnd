@@ -1,5 +1,5 @@
 <script setup>
-import StatusBadge from '../StatusBadge.vue';
+import StatusBadge from './StatusBadge.vue';
 
 defineProps({
   activities: Array
