@@ -21,6 +21,10 @@ const handleLogout = () => {
   authStore.logout()
   router.push('/login')
 }
+
+function goSettings() {
+  router.push("/configuracoes");
+}
 </script>
 
 <template>
@@ -46,6 +50,15 @@ const handleLogout = () => {
 
         <div class="icons">
             <div class="profile-container">
+                <img
+                    src="../assets/icone-configurações.png"
+                    class="settings-icon"
+                    alt="Configurações"
+                    role="button"
+                    tabindex="0"
+                    @click="goSettings"
+                    @keydown.enter="goSettings"
+                />
                 <img 
                     src="../assets/icone-user.png" 
                     @click="toggleProfile" 
@@ -74,13 +87,19 @@ const handleLogout = () => {
     position: relative;
     display: flex;
     width: 180px;
-    
+    justify-content: flex-end;
+    align-items: center;
 }
 
 .user-icon {
     cursor: pointer;
     width: 30px;
     height: auto;
+}
+
+.settings-icon{
+    cursor: pointer;
+    height: 22px;
 }
 
 .profile-dropdown {
@@ -164,9 +183,8 @@ nav .links a:hover {
 
 
 nav .icons img {
-  margin-left: auto;
   cursor: pointer;
-
+  margin-left: 10px;
 }
 
 .hamburger {
