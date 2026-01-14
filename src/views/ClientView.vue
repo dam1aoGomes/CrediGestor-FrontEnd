@@ -1,17 +1,27 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 import axios from 'axios';
 import Navbar from '../components/Navbar.vue';
+import { useRouter } from 'vue-router';
 
+// Reutilizando ou criando componentes similares aos de vendas
+import SearchInput from '../components/vendas/SearchInput.vue'
+import ActionButton from '../components/vendas/Button.vue'
+import PaginationControls from '../components/vendas/PaginationControls.vue'
+
+const router = useRouter();
 const clientes = ref([]);
 const loading = ref(true);
-const search = ref('');
 
-// Função para buscar dados da rota GET que analisamos no FastAPI
+// Estados de filtro e paginação
+const searchQuery = ref('');
+const page = ref(1);
+const perPage = 10;
+
 const fetchClientes = async () => {
     try {
         const apiLink = import.meta.env.VITE_API_URL;
-        const response = await axios.get(`${apiLink}/api/customers`); // Ajuste o prefixo se necessário
+        const response = await axios.get(`${apiLink}/api/customers`);
         clientes.value = response.data;
     } catch (error) {
         console.error("Erro ao carregar clientes:", error);
@@ -23,84 +33,137 @@ const fetchClientes = async () => {
 onMounted(() => {
     fetchClientes();
 });
+
+// Lógica de Busca Automática (Igual a Vendas)
+const filteredClientes = computed(() => {
+    let list = clientes.value || [];
+
+    if (searchQuery.value) {
+        const query = searchQuery.value.toLowerCase();
+        list = list.filter(item => 
+            item.full_name.toLowerCase().includes(query) || 
+            (item.cpf && item.cpf.includes(query))
+        );
+    }
+    return list;
+});
+
+// Lógica de Paginação
+const totalPages = computed(() => {
+    return Math.max(1, Math.ceil(filteredClientes.value.length / perPage));
+});
+
+const paginatedClientes = computed(() => {
+    const start = (page.value - 1) * perPage;
+    return filteredClientes.value.slice(start, start + perPage);
+});
+
+// Resetar página ao buscar
+watch(searchQuery, () => {
+    page.value = 1;
+});
+
+function goToCreate() {
+    router.push('/criar-clientes');
+}
+
+function prevPage() {
+    if (page.value > 1) page.value--;
+}
+
+function nextPage() {
+    if (page.value < totalPages.value) page.value++;
+}
 </script>
 
 <template>
     <Navbar />
-    <main class="container">
-        <div class="sidebar">
+    <main class="clients-page">
+        <aside class="filters-container">
             <h1>Clientes</h1>
-            <div class="search-box">
-                <input type="text" v-model="search" placeholder="Buscar...">
+            <div class="filter-name">
+                <SearchInput 
+                    v-model="searchQuery" 
+                    placeholder="Pesquisar cliente..." 
+                />
             </div>
-            <RouterLink to="criar-clientes"><button class="btn-add">Adicionar Cliente</button></RouterLink>
-        </div>
+            
+            <div class="new-client-button">
+                <ActionButton text="Adicionar Cliente" @click="goToCreate"/>
+            </div>
+        </aside>
 
-        <div class="table-container">
-            <table v-if="!loading">
-                <thead>
-                    <tr>
-                        <th>Nome</th>
-                        <th>CPF/CNPJ</th>
-                        <th>Telefone</th>
-                        <th>Email</th>
-                        <th>Endereço</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="cliente in clientes" :key="cliente.id">
-                        <td>{{ cliente.full_name }}</td>
-                        <td>{{ cliente.cpf || '---' }}</td>
-                        <td>{{ cliente.phone }}</td>
-                        <td>{{ cliente.email }}</td>
+        <section class="content-table">
+            <div class="table-container">
+                <table v-if="!loading">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>CPF/CNPJ</th>
+                            <th>Telefone</th>
+                            <th>Email</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="cliente in paginatedClientes" :key="cliente.id">
+                            <td>{{ cliente.full_name }}</td>
+                            <td>{{ cliente.cpf || '---' }}</td>
+                            <td>{{ cliente.phone }}</td>
+                            <td>{{ cliente.email }}</td>
+                            <td>
+                                <RouterLink :to="`/editar-clientes/${cliente.id}`">
+                                    <button class="btn-edit">Editar</button>
+                                </RouterLink>
+                            </td>
+                        </tr>
+                        <tr v-if="filteredClientes.length === 0">
+                            <td colspan="5" style="text-align: center; padding: 20px;">
+                                Nenhum cliente encontrado.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div v-else class="loading-state">Carregando clientes...</div>
+            </div>
 
-                        <td>
-                            <RouterLink :to="`/editar-clientes/${cliente.id}`">
-                                <button class="btn-edit">Editar</button>
-                            </RouterLink>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            <p v-else>Carregando clientes...</p>
-        </div>
+            <PaginationControls 
+                :page="page" 
+                :total="totalPages" 
+                @prev="prevPage" 
+                @next="nextPage" 
+            />
+        </section>
     </main>
 </template>
 
 <style scoped>
-.container {
-    display: grid;
-    grid-template-columns: 250px 1fr;
+/* Aplicando o Layout Flex da tela de Vendas */
+.clients-page {
+    display: flex;
     gap: 30px;
-    padding: 40px;
-    background-color: #f8fafc;
-    min-height: 90vh;
+    padding: 30px;
+    max-width: 1400px;
+    margin: 0 auto;
 }
 
-.sidebar h1 {
+.filters-container {
+    width: 280px;
+    flex-shrink: 0;
+}
+
+.content-table {
+    flex-grow: 1;
+    min-width: 0;
+}
+
+h1 {
     font-size: 2rem;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
 }
 
-.search-box input {
-    width: 100%;
-    padding: 12px;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-    background-color: #edf2f7;
-    margin-bottom: 15px;
-}
-
-.btn-add {
-    width: 100%;
-    background-color: #125ced;
-    color: white;
-    border: none;
-    padding: 12px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: bold;
+.filter-name {
+    margin-bottom: 16px;
 }
 
 .table-container {
@@ -109,6 +172,7 @@ onMounted(() => {
     padding: 20px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     overflow-x: auto;
+    margin-bottom: 20px;
 }
 
 table {
@@ -137,9 +201,27 @@ td {
     padding: 6px 15px;
     border-radius: 6px;
     cursor: pointer;
+    transition: 0.2s;
 }
 
 .btn-edit:hover {
     background-color: #e2e8f0;
+}
+
+.loading-state {
+    text-align: center;
+    padding: 40px;
+    color: #718096;
+}
+
+@media (max-width: 768px) {
+    .clients-page {
+        flex-direction: column;
+        padding: 16px;
+    }
+    
+    .filters-container {
+        width: 100%;
+    }
 }
 </style>
