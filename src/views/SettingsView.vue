@@ -1,6 +1,6 @@
 <script setup>
 import { computed, onMounted, reactive, watch } from "vue";
-import NavBar from "../components/NavBar.vue";
+import NavBar from "../components/Navbar.vue";
 import { useSystemConfigStore } from "../stores/systemConfigStore";
 
 const store = useSystemConfigStore();
