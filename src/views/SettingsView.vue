@@ -52,7 +52,7 @@ async function onExport() {
       <header class="settings-header">
         <h1 class="settings-page__title">Configurações do sistema</h1>
 
-        <!-- <button
+        <button
           class="settings-exportBtn"
           type="button"
           :disabled="loading || exporting"
@@ -61,7 +61,7 @@ async function onExport() {
           
         >
           {{ exporting ? "Exportando..." : "Exportar Backup" }}
-        </button> -->
+        </button>
       </header>
 
       <p v-if="loading" class="cg-empty">Carregando configurações...</p>
